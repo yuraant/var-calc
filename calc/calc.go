@@ -83,8 +83,6 @@ func VarsCalc(variable string, args []string) Resp {
 		}
 		response.Print = true
 	}
-
-	//fmt.Println(Store.Variables)
 	return response
 }
 
@@ -199,7 +197,6 @@ func (m *Memory) UpdateExpression(name, argName string, argValue int) {
 //
 // Auxiliary functions
 //
-
 func noVarsInAgs(args []string) bool {
 	for _, v := range args {
 		if _, err := strconv.Atoi(v); err != nil {
@@ -265,7 +262,6 @@ func checkIfDetermined(vars []string) Resp {
 								Store.SetValue(varName, value)
 								response.Variables[varName] = value
 								response.Print = true
-
 							}
 							updated = true
 						}
