@@ -18,21 +18,23 @@ type VariableDetails struct {
 	Printed    bool
 }
 
-//Resp type that func CalcVars returns
+//Resp type that func VarsCalc returns
 type Resp struct {
 	Print     bool
 	Variables map[string]int
 }
 
-//Store create storage in memory for variables
+//Store creates storage in memory for variables
 var Store = new(Memory)
+
+//empty slice of strings, just gag for some cases.
 var emptyStrSlice []string
 
 //VarsCalc returns data for printing
 func VarsCalc(variable string, args []string) Resp {
 	var response Resp
+	//map initialization
 	response.Variables = make(map[string]int)
-
 	switch {
 	case Store.CheckVar(variable) == false && noVarsInAgs(args) == true:
 		value := sumIntSlice(convertStrToIntSlice(args))
