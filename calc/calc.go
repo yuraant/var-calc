@@ -36,16 +36,16 @@ func VarsCalc(variable string, args []string) Resp {
 	//map initialization
 	response.Variables = make(map[string]int)
 	switch {
-	case Store.CheckVar(variable) == false && noVarsInAgs(args) == true:
+	case !Store.CheckVar(variable) && noVarsInAgs(args):
 		value := sumIntSlice(convertStrToIntSlice(args))
 		response.Variables[variable] = value
 		response.Print = true
 		Store.AddVar(variable, emptyStrSlice, value, true)
-	case Store.CheckVar(variable) == false && noVarsInAgs(args) == false:
+	case !Store.CheckVar(variable) && !noVarsInAgs(args):
 		Store.AddVar(variable, args, 0, false)
 		vars := getVarFromAgs(args)
 		for _, v := range vars {
-			if Store.CheckVar(v) == true {
+			if Store.CheckVar(v) {
 				value, err := Store.GetValue(v)
 				if err == nil {
 					Store.UpdateExpression(variable, v, value)
@@ -53,7 +53,7 @@ func VarsCalc(variable string, args []string) Resp {
 					if err != nil {
 						fmt.Println(err)
 					}
-					if noVarsInAgs(expression) == true {
+					if noVarsInAgs(expression) {
 						value := sumIntSlice(convertStrToIntSlice(expression))
 						Store.SetValue(variable, value)
 						response.Variables[variable] = value
@@ -65,21 +65,21 @@ func VarsCalc(variable string, args []string) Resp {
 				Store.AddVar(v, emptyStrSlice, 0, false)
 			}
 		}
-	case Store.CheckVar(variable) == true && Store.CheckIfValueEmpty(variable) == true && noVarsInAgs(args) == true:
+	case Store.CheckVar(variable) && Store.CheckIfValueEmpty(variable) && noVarsInAgs(args):
 		value := sumIntSlice(convertStrToIntSlice(args))
 		response.Variables[variable] = value
 		response.Print = true
 		Store.SetValue(variable, value)
-	case Store.CheckVar(variable) == true && Store.CheckIfValueEmpty(variable) == true && noVarsInAgs(args) == false:
+	case Store.CheckVar(variable) && Store.CheckIfValueEmpty(variable) && !noVarsInAgs(args):
 		if Store.CheckIfExprIsEmpty(variable) == true {
 			Store.SetExpression(variable, args)
 		}
-	case Store.CheckVar(variable) == true && Store.CheckIfValueEmpty(variable) == false:
+	case Store.CheckVar(variable) && !Store.CheckIfValueEmpty(variable):
 		fmt.Println("variable already exists and cannot be overridden")
 	}
 
 	varsForResponse := checkIfDetermined(Store.GetAllNotPtintedVars())
-	if varsForResponse.Print == true {
+	if varsForResponse.Print {
 		for k, v := range varsForResponse.Variables {
 			response.Variables[k] = v
 		}
@@ -126,7 +126,7 @@ func (m *Memory) GetAllNotPtintedVars() []string {
 //GetValue of variable from memory struct
 func (m *Memory) GetValue(v string) (int, error) {
 	for _, val := range m.Variables {
-		if val.Name == v && val.Printed == true {
+		if val.Name == v && val.Printed {
 			return val.Value, nil
 		}
 	}
@@ -274,7 +274,7 @@ func checkIfDetermined(vars []string) Resp {
 	}
 	if updated == true {
 		result := checkIfDetermined(Store.GetAllNotPtintedVars())
-		if result.Print == true {
+		if result.Print {
 			for k, v := range result.Variables {
 				response.Variables[k] = v
 			}
