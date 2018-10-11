@@ -36,23 +36,23 @@ func VarsCalc(variable string, args []string) Resp {
 	//map initialization
 	response.Variables = make(map[string]int)
 	switch {
-	case !Store.CheckVar(variable) && noVarsInAgs(args):
+	case !Store.CheckIfVarExists(variable) && noVarsInArgs(args):
 		value := sumIntSlice(convertStrToIntSlice(args))
 		response.Variables[variable] = value
 		response.Print = true
 		Store.AddVar(variable, emptyStrSlice, value, true)
 
-	case !Store.CheckVar(variable) && !noVarsInAgs(args):
+	case !Store.CheckIfVarExists(variable) && !noVarsInArgs(args):
 		Store.AddVar(variable, args, 0, false)
-		vars := getVarFromAgs(args)
+		vars := getVarFromArgs(args)
 		for _, v := range vars {
-			if Store.CheckVar(v) {
+			if Store.CheckIfVarExists(v) {
 				value, err := Store.GetValue(v)
 				if err == nil {
 					Store.UpdateExpression(variable, v, value)
 					expression, err := Store.GetExpression(variable)
 					checkErr(err)
-					if noVarsInAgs(expression) {
+					if noVarsInArgs(expression) {
 						value := sumIntSlice(convertStrToIntSlice(expression))
 						Store.SetValue(variable, value)
 						response.Variables[variable] = value
@@ -65,22 +65,22 @@ func VarsCalc(variable string, args []string) Resp {
 			}
 		}
 
-	case Store.CheckVar(variable) && Store.CheckIfValueEmpty(variable) && noVarsInAgs(args):
+	case Store.CheckIfVarExists(variable) && Store.CheckIfValueIsEmpty(variable) && noVarsInArgs(args):
 		value := sumIntSlice(convertStrToIntSlice(args))
 		response.Variables[variable] = value
 		response.Print = true
 		Store.SetValue(variable, value)
 
-	case Store.CheckVar(variable) && Store.CheckIfValueEmpty(variable) && !noVarsInAgs(args):
+	case Store.CheckIfVarExists(variable) && Store.CheckIfValueIsEmpty(variable) && !noVarsInArgs(args):
 		if Store.CheckIfExprIsEmpty(variable) == true {
 			Store.SetExpression(variable, args)
 		}
 
-	case Store.CheckVar(variable) && !Store.CheckIfValueEmpty(variable):
+	case Store.CheckIfVarExists(variable) && !Store.CheckIfValueIsEmpty(variable):
 		fmt.Println("variable already exists and cannot be overridden")
 	}
 
-	varsForResponse := checkIfDetermined(Store.GetAllNotPtintedVars())
+	varsForResponse := checkIfDetermined(Store.GetAllNotPrintedVars())
 	if varsForResponse.Print {
 		for k, v := range varsForResponse.Variables {
 			response.Variables[k] = v
@@ -94,14 +94,14 @@ func VarsCalc(variable string, args []string) Resp {
 // Methods for struct Memory
 //
 
-//AddVar adds variable with ditails to memeory
+//AddVar adds variable with ditails to memory
 func (m *Memory) AddVar(name string, exp []string, value int, print bool) {
 	var varDetails = VariableDetails{name, value, exp, print}
 	m.Variables = append(m.Variables, varDetails)
 }
 
-//CheckVar if variable exist in memory struct
-func (m *Memory) CheckVar(v string) bool {
+//CheckIfVarExists if variable exist in memory struct
+func (m *Memory) CheckIfVarExists(v string) bool {
 	for _, val := range m.Variables {
 		if val.Name == v {
 			return true
@@ -110,8 +110,8 @@ func (m *Memory) CheckVar(v string) bool {
 	return false
 }
 
-//GetAllNotPtintedVars rom memory
-func (m *Memory) GetAllNotPtintedVars() []string {
+//GetAllNotPrintedVars rom memory
+func (m *Memory) GetAllNotPrintedVars() []string {
 	var vars []string
 	for _, val := range m.Variables {
 		if val.Printed == false {
@@ -131,8 +131,8 @@ func (m *Memory) GetValue(v string) (int, error) {
 	return 0, fmt.Errorf("Variable %s has not determined yet", v)
 }
 
-//CheckIfValueEmpty method for decision
-func (m *Memory) CheckIfValueEmpty(v string) bool {
+//CheckIfValueIsEmpty method for decision
+func (m *Memory) CheckIfValueIsEmpty(v string) bool {
 	for _, val := range m.Variables {
 		if val.Name == v && val.Printed == false && val.Value == 0 {
 			return true
@@ -197,7 +197,7 @@ func (m *Memory) UpdateExpression(name, argName string, argValue int) {
 //
 // Auxiliary functions
 //
-func noVarsInAgs(args []string) bool {
+func noVarsInArgs(args []string) bool {
 	for _, v := range args {
 		if _, err := strconv.Atoi(v); err != nil {
 			return false
@@ -226,7 +226,7 @@ func sumIntSlice(sl []int) int {
 	return sum
 }
 
-func getVarFromAgs(args []string) []string {
+func getVarFromArgs(args []string) []string {
 	var vars []string
 	for _, v := range args {
 		if _, err := strconv.Atoi(v); err != nil {
@@ -245,15 +245,15 @@ func checkIfDetermined(vars []string) Resp {
 			expr, err := Store.GetExpression(varName)
 			checkErr(err)
 			if len(expr) > 0 {
-				varsInExpr := getVarFromAgs(expr)
+				varsInExpr := getVarFromArgs(expr)
 				for _, varNameInExpresion := range varsInExpr {
-					if Store.CheckVar(varNameInExpresion) {
+					if Store.CheckIfVarExists(varNameInExpresion) {
 						varValue, err := Store.GetValue(varNameInExpresion)
 						if err == nil {
 							Store.UpdateExpression(varName, varNameInExpresion, varValue)
 							updatedExpr, err := Store.GetExpression(varName)
 							checkErr(err)
-							if noVarsInAgs(updatedExpr) {
+							if noVarsInArgs(updatedExpr) {
 								value := sumIntSlice(convertStrToIntSlice(updatedExpr))
 								Store.SetValue(varName, value)
 								response.Variables[varName] = value
@@ -267,7 +267,7 @@ func checkIfDetermined(vars []string) Resp {
 		}
 	}
 	if updated {
-		result := checkIfDetermined(Store.GetAllNotPtintedVars())
+		result := checkIfDetermined(Store.GetAllNotPrintedVars())
 		if result.Print {
 			for k, v := range result.Variables {
 				response.Variables[k] = v
