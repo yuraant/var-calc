@@ -41,6 +41,7 @@ func VarsCalc(variable string, args []string) Resp {
 		response.Variables[variable] = value
 		response.Print = true
 		Store.AddVar(variable, emptyStrSlice, value, true)
+
 	case !Store.CheckVar(variable) && !noVarsInAgs(args):
 		Store.AddVar(variable, args, 0, false)
 		vars := getVarFromAgs(args)
@@ -50,9 +51,7 @@ func VarsCalc(variable string, args []string) Resp {
 				if err == nil {
 					Store.UpdateExpression(variable, v, value)
 					expression, err := Store.GetExpression(variable)
-					if err != nil {
-						fmt.Println(err)
-					}
+					checkErr(err)
 					if noVarsInAgs(expression) {
 						value := sumIntSlice(convertStrToIntSlice(expression))
 						Store.SetValue(variable, value)
@@ -65,15 +64,18 @@ func VarsCalc(variable string, args []string) Resp {
 				Store.AddVar(v, emptyStrSlice, 0, false)
 			}
 		}
+
 	case Store.CheckVar(variable) && Store.CheckIfValueEmpty(variable) && noVarsInAgs(args):
 		value := sumIntSlice(convertStrToIntSlice(args))
 		response.Variables[variable] = value
 		response.Print = true
 		Store.SetValue(variable, value)
+
 	case Store.CheckVar(variable) && Store.CheckIfValueEmpty(variable) && !noVarsInAgs(args):
 		if Store.CheckIfExprIsEmpty(variable) == true {
 			Store.SetExpression(variable, args)
 		}
+
 	case Store.CheckVar(variable) && !Store.CheckIfValueEmpty(variable):
 		fmt.Println("variable already exists and cannot be overridden")
 	}
@@ -241,9 +243,7 @@ func checkIfDetermined(vars []string) Resp {
 	if len(vars) > 0 {
 		for _, varName := range vars {
 			expr, err := Store.GetExpression(varName)
-			if err != nil {
-				fmt.Println(err)
-			}
+			checkErr(err)
 			if len(expr) > 0 {
 				varsInExpr := getVarFromAgs(expr)
 				for _, varNameInExpresion := range varsInExpr {
@@ -252,9 +252,7 @@ func checkIfDetermined(vars []string) Resp {
 						if err == nil {
 							Store.UpdateExpression(varName, varNameInExpresion, varValue)
 							updatedExpr, err := Store.GetExpression(varName)
-							if err != nil {
-								fmt.Println(err)
-							}
+							checkErr(err)
 							if noVarsInAgs(updatedExpr) {
 								value := sumIntSlice(convertStrToIntSlice(updatedExpr))
 								Store.SetValue(varName, value)
@@ -278,4 +276,10 @@ func checkIfDetermined(vars []string) Resp {
 		updated = false
 	}
 	return response
+}
+
+func checkErr(err error) {
+	if err != nil {
+		fmt.Println(err)
+	}
 }
