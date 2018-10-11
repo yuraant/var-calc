@@ -94,11 +94,7 @@ func VarsCalc(variable string, args []string) Resp {
 
 //AddVar adds variable with ditails to memeory
 func (m *Memory) AddVar(name string, exp []string, value int, print bool) {
-	var varDetails VariableDetails
-	varDetails.Expression = exp
-	varDetails.Value = value
-	varDetails.Name = name
-	varDetails.Printed = print
+	var varDetails = VariableDetails{name, value, exp, print}
 	m.Variables = append(m.Variables, varDetails)
 }
 
@@ -251,7 +247,7 @@ func checkIfDetermined(vars []string) Resp {
 			if len(expr) > 0 {
 				varsInExpr := getVarFromAgs(expr)
 				for _, varNameInExpresion := range varsInExpr {
-					if Store.CheckVar(varNameInExpresion) == true {
+					if Store.CheckVar(varNameInExpresion) {
 						varValue, err := Store.GetValue(varNameInExpresion)
 						if err == nil {
 							Store.UpdateExpression(varName, varNameInExpresion, varValue)
@@ -259,7 +255,7 @@ func checkIfDetermined(vars []string) Resp {
 							if err != nil {
 								fmt.Println(err)
 							}
-							if noVarsInAgs(updatedExpr) == true {
+							if noVarsInAgs(updatedExpr) {
 								value := sumIntSlice(convertStrToIntSlice(updatedExpr))
 								Store.SetValue(varName, value)
 								response.Variables[varName] = value
@@ -272,7 +268,7 @@ func checkIfDetermined(vars []string) Resp {
 			}
 		}
 	}
-	if updated == true {
+	if updated {
 		result := checkIfDetermined(Store.GetAllNotPtintedVars())
 		if result.Print {
 			for k, v := range result.Variables {
