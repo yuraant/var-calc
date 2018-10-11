@@ -27,7 +27,7 @@ func main() {
 	}
 }
 
-//strToArg split console string to variable and agruments
+// strToArg split console string to variable and agruments
 func strToArg(s string) (string, []string) {
 	result := strings.SplitN(s, "=", 2)
 	variable := strings.TrimSpace(result[0])

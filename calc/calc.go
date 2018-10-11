@@ -5,12 +5,12 @@ import (
 	"strconv"
 )
 
-//Memory is a structur where we store all variables while app runs
+// Memory is a structur where we store all variables while app runs
 type Memory struct {
 	Variables []VariableDetails
 }
 
-//VariableDetails is a struct for every variable and its properties
+// VariableDetails is a struct for every variable and its properties
 type VariableDetails struct {
 	Name       string
 	Value      int
@@ -18,22 +18,22 @@ type VariableDetails struct {
 	Printed    bool
 }
 
-//Resp type that func VarsCalc returns
+// Resp type that func VarsCalc returns
 type Resp struct {
 	Print     bool
 	Variables map[string]int
 }
 
-//Store creates storage in memory for variables
+// Store creates storage in memory for variables
 var Store = new(Memory)
 
-//empty slice of strings, just gag for some cases.
+// empty slice of strings, just gag for some cases.
 var emptyStrSlice []string
 
-//VarsCalc returns data for printing
+// VarsCalc returns data for printing
 func VarsCalc(variable string, args []string) Resp {
 	var response Resp
-	//map initialization
+	// map initialization
 	response.Variables = make(map[string]int)
 	switch {
 	case !Store.CheckIfVarExists(variable) && noVarsInArgs(args):
@@ -93,13 +93,13 @@ func VarsCalc(variable string, args []string) Resp {
 // Methods for struct Memory
 //
 
-//AddVar adds variable with ditails to memory
+// AddVar adds variable with ditails to memory
 func (m *Memory) AddVar(name string, exp []string, value int, print bool) {
 	var varDetails = VariableDetails{name, value, exp, print}
 	m.Variables = append(m.Variables, varDetails)
 }
 
-//CheckIfVarExists if variable exist in memory struct
+// CheckIfVarExists if variable exist in memory struct
 func (m *Memory) CheckIfVarExists(v string) bool {
 	for _, val := range m.Variables {
 		if val.Name == v {
@@ -109,7 +109,7 @@ func (m *Memory) CheckIfVarExists(v string) bool {
 	return false
 }
 
-//GetAllNotPrintedVars rom memory
+// GetAllNotPrintedVars rom memory
 func (m *Memory) GetAllNotPrintedVars() []string {
 	var vars []string
 	for _, val := range m.Variables {
@@ -120,7 +120,7 @@ func (m *Memory) GetAllNotPrintedVars() []string {
 	return vars
 }
 
-//GetValue of variable from memory struct
+// GetValue of variable from memory struct
 func (m *Memory) GetValue(v string) (int, error) {
 	for _, val := range m.Variables {
 		if val.Name == v && val.Printed {
@@ -130,7 +130,7 @@ func (m *Memory) GetValue(v string) (int, error) {
 	return 0, fmt.Errorf("Variable %s has not determined yet", v)
 }
 
-//CheckIfValueIsEmpty method for decision
+// CheckIfValueIsEmpty method for decision
 func (m *Memory) CheckIfValueIsEmpty(v string) bool {
 	for _, val := range m.Variables {
 		if val.Name == v && val.Printed == false && val.Value == 0 {
@@ -140,7 +140,7 @@ func (m *Memory) CheckIfValueIsEmpty(v string) bool {
 	return false
 }
 
-//SetValue determined value
+// SetValue determined value
 func (m *Memory) SetValue(name string, value int) {
 	for key, val := range m.Variables {
 		if val.Name == name {
@@ -150,7 +150,7 @@ func (m *Memory) SetValue(name string, value int) {
 	}
 }
 
-//CheckIfExprIsEmpty method for decision
+// CheckIfExprIsEmpty method for decision
 func (m *Memory) CheckIfExprIsEmpty(v string) bool {
 	for _, val := range m.Variables {
 		if val.Name == v && len(val.Expression) > 0 {
@@ -160,7 +160,7 @@ func (m *Memory) CheckIfExprIsEmpty(v string) bool {
 	return true
 }
 
-//GetExpression gest property Expression form variable in memory
+// GetExpression gest property Expression form variable in memory
 func (m *Memory) GetExpression(v string) ([]string, error) {
 	for _, val := range m.Variables {
 		if val.Name == v {
@@ -170,7 +170,7 @@ func (m *Memory) GetExpression(v string) ([]string, error) {
 	return emptyStrSlice, fmt.Errorf("Variable %s does not exist", v)
 }
 
-//SetExpression sets property Expression for variable in memory
+// SetExpression sets property Expression for variable in memory
 func (m *Memory) SetExpression(v string, args []string) {
 	for key, val := range m.Variables {
 		if val.Name == v {
@@ -179,7 +179,7 @@ func (m *Memory) SetExpression(v string, args []string) {
 	}
 }
 
-//UpdateExpression in memory for variable
+// UpdateExpression in memory for variable
 func (m *Memory) UpdateExpression(name, argName string, argValue int) {
 	for _, v := range m.Variables {
 		if v.Name == name {
@@ -193,7 +193,7 @@ func (m *Memory) UpdateExpression(name, argName string, argValue int) {
 }
 
 //
-// Auxiliary functions
+//  Auxiliary functions
 //
 func noVarsInArgs(args []string) bool {
 	for _, v := range args {
