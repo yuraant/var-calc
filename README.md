@@ -3,8 +3,7 @@ This is small summing calculator for variables which can determine value of vari
 In case expression contains some variables that cannot be determine right now, such variables will be stored in memory and will be printed as soon as they can be determined
 
 ## Build and Run
-Application requiers GO being installed on your machine
-Clone current repo. then run commands in console
+Application requires GO being installed on your machine Clone current repo. then run commands in console.
 ```
 # cd [to repo folder] 
 # go build
@@ -44,16 +43,16 @@ Calc can be used as a library and be imported into your project
 ````
 https://github.com/yuraant/var-calc/calc
 ````
-```
+```Golang
 import (
 	
 	"var-calc/calc"
-  or
-  "github.com/yuraant/var-calc/calc"
+  	OR
+  	"github.com/yuraant/var-calc/calc"
 )
 ```
-you need to use func calc.VarsCalc
-This function takes 2 parameters "VariableName" `string` and "Ärguments" `[]string` 
+You need to use func calc.VarsCalc
+This function takes 2 parameters "VariableName" `string` and "Arguments" `[]string` 
 Returns struct
 ```Golang
 type Resp struct {
