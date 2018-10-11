@@ -16,7 +16,7 @@ func main() {
 	for scanner.Scan() {
 		variable, args := strToArg(scanner.Text())
 		calcResp = calc.VarsCalc(variable, args)
-		if calcResp.Print == true {
+		if calcResp.Print {
 			for k, v := range calcResp.Variables {
 				fmt.Printf("===> %s = %d\n", k, v)
 			}
