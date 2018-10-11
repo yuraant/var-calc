@@ -59,7 +59,6 @@ func VarsCalc(variable string, args []string) Resp {
 						response.Print = true
 					}
 				}
-
 			} else {
 				Store.AddVar(v, emptyStrSlice, 0, false)
 			}
@@ -178,7 +177,6 @@ func (m *Memory) SetExpression(v string, args []string) {
 			m.Variables[key].Expression = args
 		}
 	}
-
 }
 
 //UpdateExpression in memory for variable
@@ -246,11 +244,11 @@ func checkIfDetermined(vars []string) Resp {
 			checkErr(err)
 			if len(expr) > 0 {
 				varsInExpr := getVarFromArgs(expr)
-				for _, varNameInExpresion := range varsInExpr {
-					if Store.CheckIfVarExists(varNameInExpresion) {
-						varValue, err := Store.GetValue(varNameInExpresion)
+				for _, varNameInExpression := range varsInExpr {
+					if Store.CheckIfVarExists(varNameInExpression) {
+						varValue, err := Store.GetValue(varNameInExpression)
 						if err == nil {
-							Store.UpdateExpression(varName, varNameInExpresion, varValue)
+							Store.UpdateExpression(varName, varNameInExpression, varValue)
 							updatedExpr, err := Store.GetExpression(varName)
 							checkErr(err)
 							if noVarsInArgs(updatedExpr) {
